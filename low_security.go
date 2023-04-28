@@ -36,13 +36,13 @@ func main() {
 
 	fmt.Println("users table will be created. Press any key to continue...")
 	fmt.Scanln(&key)
-        
+
 	query := `DROP TABLE IF EXISTS users1;`
 
-        _, err = db.ExecContext(context.Background(), query)
-        if err != nil {
-                log.Printf("Error %s when deleting users1 table", err)
-        }
+	_, err = db.ExecContext(context.Background(), query)
+	if err != nil {
+		log.Printf("Error %s when deleting users1 table", err)
+	}
 
 	query = `CREATE TABLE IF NOT EXISTS users1(username VARCHAR(20) primary key, password VARCHAR(20))`
 
@@ -61,7 +61,6 @@ func main() {
 		panic(err.Error())
 	}
 	defer insert.Close()
-	
 
 	// get username and password
 	var username, password string
@@ -74,23 +73,23 @@ func main() {
 	line, _, err := bio.ReadLine()
 	username = string(line)
 	fmt.Println(username)
-	
+
 	fmt.Println("Enter password : ")
 	line, _, err = bio.ReadLine()
 	password = string(line)
 	fmt.Println(password)
-	
-	query=fmt.Sprintf("SELECT username, password FROM users1 where username='%s' and password='%s';", username, password)
+
+	query = fmt.Sprintf("SELECT username, password FROM users1 where username='%s' and password='%s';", username, password)
 	fmt.Println(query)
 	results, err := db.Query(query)
 	if err != nil {
-		panic(err.Error()) 
+		panic(err.Error())
 	}
 
 	for results.Next() {
 		var username string
 		var password string
-		
+
 		err = results.Scan(&username, &password)
 		if err != nil {
 			panic(err.Error())
