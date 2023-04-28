@@ -16,5 +16,7 @@ go run [filename]
 - password: password
 - database: Security
 
-
+### low_security is vulnerable application
+### regexp_security uses Regular Expressions to thwart SQL Injection
+### high_security uses GoLang's feature to provide security against SQL Injection 
 

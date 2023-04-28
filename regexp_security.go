@@ -1,3 +1,10 @@
+// Attack vectors
+// ' or ''='
+// ' or 1=1 #'
+// ' UNION SELECT * from users2 where 1=1 or password='
+// ' UNION SELECT @@hostname, @@hostname; #
+// ' UNION SELECT @@hostname, load_file('/var/lib/mysql-files/secret_key'); #
+
 package main
 
 import (
@@ -7,11 +14,12 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"regexp"
 	"os"
 )
 
 func main() {
-	fmt.Println("SQL Injection secure Application")
+	fmt.Println("SQL Injection security by Regular Expressions")
 
 	// Open up our database connection.
 	db, err := sql.Open("mysql", "root:password@tcp(127.0.0.1:3306)/Security")
@@ -30,14 +38,14 @@ func main() {
 	fmt.Println("users table will be created. Press any key to continue...")
 	fmt.Scanln(&key)
 
-	query := `DROP TABLE IF EXISTS users3;`
+	query := `DROP TABLE IF EXISTS users2;`
 
 	_, err = db.ExecContext(context.Background(), query)
 	if err != nil {
-		log.Printf("Error %s when deleting users3 table", err)
+		log.Printf("Error %s when deleting users2 table", err)
 	}
 
-	query = `CREATE TABLE IF NOT EXISTS users3(username VARCHAR(20) primary key, password VARCHAR(20))`
+	query = `CREATE TABLE IF NOT EXISTS users2(username VARCHAR(20) primary key, password VARCHAR(20))`
 
 	_, err = db.ExecContext(context.Background(), query)
 	if err != nil {
@@ -45,11 +53,11 @@ func main() {
 		return
 	}
 
-	fmt.Println("3 users will be inserted into users3 table. Press any key to continue...")
+	fmt.Println("3 users will be inserted into users2 table. Press any key to continue...")
 	fmt.Scanln(&key)
 
 	// perform a db.Query insert
-	insert, err := db.Query(`INSERT INTO users3 VALUES ( 'user1', 'password1' ), ( 'user2', 'password2' ), ( 'user3', 'password3' );`)
+	insert, err := db.Query(`INSERT INTO users2 VALUES ( 'user1', 'password1' ), ( 'user2', 'password2' ), ( 'user3', 'password3' );`)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -72,8 +80,15 @@ func main() {
 	password = string(line)
 	fmt.Println(password)
 
-	// Use of ? instead of formatting
-	results, err := db.Query("SELECT username, password FROM users3 where username=? and password=?;", username, password)
+	// Check the regex
+	var validParams = regexp.MustCompile(`^[\w ]+$`)
+	if validParams.MatchString(username) == false || validParams.MatchString(password) == false {
+		panic("Possible SQL Injection attack.")
+	}
+
+	query = fmt.Sprintf("SELECT username, password FROM users2 where username='%s' and password='%s';", username, password)
+	fmt.Println(query)
+	results, err := db.Query(query)
 	if err != nil {
 		panic(err.Error())
 	}

@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Go MySQL Tutorial")
+	fmt.Println("SQL Injection Vulnerable Application")
 
 	// Open up our database connection.
 	db, err := sql.Open("mysql", "root:password@tcp(127.0.0.1:3306)/Security")
